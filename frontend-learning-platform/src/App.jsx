@@ -1,24 +1,24 @@
-// frontend/src/App.jsx
-import { useEffect, useState } from 'react';
-import './index.css';
+import { Routes, Route } from 'react-router-dom';
+import MainLayout from './components/MainLayout';
+import SignUpStudent from './pages/SignUpStudent';
+import SignUpTeacher from './pages/SignUpTeacher';
+import SignIn from './pages/SignIn';
+import ForgotPassword from './pages/ForgotPassword';
+import ProfileSettings from './pages/ProfileSettings';
 
-function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('/api/users/test')
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch((err) => console.error(err));
-  }, []);
-
+const App = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <h1 className="text-6xl font-bold text-blue-600">
-        {message || 'Welcome to the Learning Platform'}
-      </h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<div className="text-center mt-10 text-2xl">Home Page (Under Construction)</div>} />
+        <Route path="/signup/student" element={<SignUpStudent />} />
+        <Route path="/signup/teacher" element={<SignUpTeacher />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
+      </Route>
+    </Routes>
   );
-}
+};
 
 export default App;
