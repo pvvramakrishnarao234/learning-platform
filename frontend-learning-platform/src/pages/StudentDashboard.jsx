@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import WebinarForm from '../components/WebinarForm';
+import JobPostForm from '../components/JobPostForm';
 
-const TeacherDashboard = () => {
+const StudentDashboard = () => {
   const { user, token } = useAuth();
   const [profile, setProfile] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [webinars, setWebinars] = useState([]);
-  const [jobsApplied, setJobsApplied] = useState([]);
+  const [jobPosts, setJobPosts] = useState([]);
+  const [webinarsApplied, setWebinarsApplied] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,20 +21,20 @@ const TeacherDashboard = () => {
 
       try {
         const headers = { 'Authorization': `Bearer ${token}` };
-        const [profileRes, webinarsRes] = await Promise.all([
+        const [profileRes, jobsRes] = await Promise.all([
           fetch('/api/profiles', { headers }),
-          fetch('/api/webinars', { headers }),
+          fetch('/api/jobs', { headers }),
         ]);
 
         if (!profileRes.ok) throw new Error(`Profile fetch failed: ${profileRes.statusText}`);
-        if (!webinarsRes.ok) throw new Error(`Webinars fetch failed: ${webinarsRes.statusText}`);
+        if (!jobsRes.ok) throw new Error(`Jobs fetch failed: ${jobsRes.statusText}`);
 
         const profileData = await profileRes.json();
-        const webinarsData = await webinarsRes.json();
+        const jobsData = await jobsRes.json();
 
         setProfile(profileData);
-        setWebinars(webinarsData.filter(w => w.creator === user.id));
-        setJobsApplied(profileData.jobsApplied || []);
+        setJobPosts(jobsData);
+        setWebinarsApplied(profileData.webinarsApplied || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -67,25 +67,29 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleWebinarSubmit = async (webinarData) => {
+  const handleJobPostSubmit = async (jobData) => {
     try {
-      const res = await fetch('/api/webinars', {
+      const res = await fetch('/api/jobs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...webinarData, creator: user.id }),
+        body: JSON.stringify(jobData),
       });
       if (res.ok) {
-        const newWebinar = await res.json();
-        setWebinars([...webinars, newWebinar]);
+        const newJob = await res.json();
+        setJobPosts([...jobPosts, newJob]);
       } else {
-        throw new Error('Failed to create webinar');
+        throw new Error('Failed to create job post');
       }
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleGoogleConnect = () => {
+    alert('Google Calendar integration coming soon...');
   };
 
   if (loading) return <div className="text-center mt-10">Loading...</div>;
@@ -93,7 +97,8 @@ const TeacherDashboard = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">Teacher Dashboard</h2>
+      <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">Student Dashboard</h2>
+
       {/* Profile Edit Section */}
       <section className="mb-8">
         <h3 className="text-xl font-semibold text-blue-600 mb-4">Profile</h3>
@@ -101,45 +106,25 @@ const TeacherDashboard = () => {
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <input
               type="text"
-              name="bio"
-              value={profile.bio || ''}
-              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+              name="firstName"
+              value={profile.user.firstName}
+              onChange={(e) => setProfile({ ...profile, user: { ...profile.user, firstName: e.target.value } })}
               className="w-full p-3 border rounded-md"
             />
             <input
               type="text"
-              name="location"
-              value={profile.location || ''}
-              onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+              name="lastName"
+              value={profile.user.lastName}
+              onChange={(e) => setProfile({ ...profile, user: { ...profile.user, lastName: e.target.value } })}
               className="w-full p-3 border rounded-md"
             />
             <input
               type="text"
-              name="timings"
-              value={profile.timings || ''}
-              onChange={(e) => setProfile({ ...profile, timings: e.target.value })}
+              name="profilePicture"
+              value={profile.user.profilePicture}
+              onChange={(e) => setProfile({ ...profile, user: { ...profile.user, profilePicture: e.target.value } })}
               className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="text"
-              name="contactNumber"
-              value={profile.contactNumber || ''}
-              onChange={(e) => setProfile({ ...profile, contactNumber: e.target.value })}
-              className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="text"
-              name="languagesSpoken"
-              value={profile.languagesSpoken.join(',') || ''}
-              onChange={(e) => setProfile({ ...profile, languagesSpoken: e.target.value.split(',') })}
-              className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="text"
-              name="tags"
-              value={profile.tags.join(',') || ''}
-              onChange={(e) => setProfile({ ...profile, tags: e.target.value.split(',') })}
-              className="w-full p-3 border rounded-md"
+              placeholder="Profile Picture URL"
             />
             <button type="submit" className="bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
               Save
@@ -154,12 +139,9 @@ const TeacherDashboard = () => {
           </form>
         ) : (
           <div>
-            <p><strong>Bio:</strong> {profile.bio || 'Not set'}</p>
-            <p><strong>Location:</strong> {profile.location || 'Not set'}</p>
-            <p><strong>Timings:</strong> {profile.timings || 'Not set'}</p>
-            <p><strong>Contact:</strong> {profile.contactNumber || 'Not set'}</p>
-            <p><strong>Languages:</strong> {profile.languagesSpoken.join(', ') || 'Not set'}</p>
-            <p><strong>Tags:</strong> {profile.tags.join(', ') || 'Not set'}</p>
+            <p><strong>Name:</strong> {profile.user.firstName} {profile.user.lastName}</p>
+            <p><strong>Email:</strong> {profile.user.email}</p>
+            <p><strong>Picture:</strong> <img src={profile.user.profilePicture} alt="Profile" className="w-16 h-16 rounded-full" /></p>
             <button
               onClick={() => setEditMode(true)}
               className="mt-4 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
@@ -169,40 +151,55 @@ const TeacherDashboard = () => {
           </div>
         )}
       </section>
-      {/* Webinar Management */}
+
+      {/* Google Connect */}
       <section className="mb-8">
-        <h3 className="text-xl font-semibold text-blue-600 mb-4">Webinar Management</h3>
-        <WebinarForm onSubmit={handleWebinarSubmit} />
+        <h3 className="text-xl font-semibold text-blue-600 mb-4">Connect Google Account</h3>
+        <button
+          onClick={handleGoogleConnect}
+          className="bg-red-600 text-white p-3 rounded-md hover:bg-red-700"
+        >
+          Connect Google Calendar
+        </button>
+      </section>
+
+      {/* Job Posts Management */}
+      <section className="mb-8">
+        <h3 className="text-xl font-semibold text-blue-600 mb-4">Job Posts</h3>
+        <JobPostForm onSubmit={handleJobPostSubmit} />
         <div className="mt-4">
-          <h4 className="text-lg font-semibold">Your Webinars</h4>
-          {webinars.length > 0 ? (
+          <h4 className="text-lg font-semibold">Your Job Posts</h4>
+          {jobPosts.length > 0 ? (
             <ul className="space-y-2">
-              {webinars.map((webinar) => (
-                <li key={webinar._id} className="border p-2 rounded-md">
-                  {webinar.title} - {new Date(webinar.startTime).toLocaleString()}
+              {jobPosts.map((job) => (
+                <li key={job._id} className="border p-2 rounded-md">
+                  {job.title} - {job.description}
                 </li>
               ))}
             </ul>
           ) : (
-            <p>No webinars created yet.</p>
+            <p>No job posts created yet.</p>
           )}
         </div>
       </section>
-      {/* Applied Jobs */}
+
+      {/* Webinars Applied */}
       <section>
-        <h3 className="text-xl font-semibold text-blue-600 mb-4">Applied Jobs</h3>
-        {jobsApplied.length > 0 ? (
+        <h3 className="text-xl font-semibold text-blue-600 mb-4">Webinars Applied</h3>
+        {webinarsApplied.length > 0 ? (
           <ul className="space-y-2">
-            {jobsApplied.map((job) => (
-              <li key={job._id} className="border p-2 rounded-md">{job.title}</li>
+            {webinarsApplied.map((webinar) => (
+              <li key={webinar._id} className="border p-2 rounded-md">
+                {webinar.title} - {new Date(webinar.startTime).toLocaleString()} ({webinar.status})
+              </li>
             ))}
           </ul>
         ) : (
-          <p>No jobs applied yet.</p>
+          <p>No webinars applied yet.</p>
         )}
       </section>
     </div>
   );
 };
 
-export default TeacherDashboard;
+export default StudentDashboard;
