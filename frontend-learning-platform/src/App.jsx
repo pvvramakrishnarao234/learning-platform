@@ -7,7 +7,8 @@ import SignUpStudent from './pages/SignUpStudent';
 import SignUpTeacher from './pages/SignUpTeacher';
 import SignIn from './pages/SignIn';
 import ForgotPassword from './pages/ForgotPassword';
-import ProfileSettings from './pages/ProfileSettings';
+import TeacherDashboard from './pages/TeacherDashboard';
+import TeacherProfilePublic from './pages/TeacherProfilePublic';
 
 const App = () => {
   return (
@@ -20,7 +21,8 @@ const App = () => {
         <Route path="/signup/teacher" element={<SignUpTeacher />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/profile-settings" element={<ProfileSettings />} />
+        <Route path="/dashboard" element={<TeacherDashboard />} /> {/* Updated from profile-settings */}
+        <Route path="/teacher/:teacherId" element={<TeacherProfilePublic />} />
       </Route>
     </Routes>
   );
