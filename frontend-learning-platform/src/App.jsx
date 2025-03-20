@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from './components/MainLayout';
+import Home from './pages/Home';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
 import SignUpStudent from './pages/SignUpStudent';
 import SignUpTeacher from './pages/SignUpTeacher';
 import SignIn from './pages/SignIn';
@@ -10,7 +13,9 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<div className="text-center mt-10 text-2xl">Home Page (Under Construction)</div>} />
+        <Route index element={<Home />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/signup/student" element={<SignUpStudent />} />
         <Route path="/signup/teacher" element={<SignUpTeacher />} />
         <Route path="/signin" element={<SignIn />} />
