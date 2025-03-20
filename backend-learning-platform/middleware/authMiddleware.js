@@ -2,25 +2,24 @@ const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
 
 const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = req.cookies.token || req.headers.authorization?.split(' ')[1]; // Support both cookies and headers
   if (!token) {
-    logger.warn('Authentication failed: No token provided');
-    return res.status(401).json({ message: 'No token, authorization denied' });
+    logger.error('No token provided');
+    return res.status(401).json({ message: 'No token provided' });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // { id, role }
     next();
   } catch (error) {
     logger.error(`Token verification failed: ${error.message}`);
-    res.status(401).json({ message: 'Token is not valid' });
+    res.status(401).json({ message: 'Invalid token' });
   }
 };
 
 const roleMiddleware = (roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
-    logger.warn(`Authorization failed: User role ${req.user.role} not allowed`);
     return res.status(403).json({ message: 'Access denied' });
   }
   next();
