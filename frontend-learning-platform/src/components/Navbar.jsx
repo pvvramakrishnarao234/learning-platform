@@ -10,7 +10,16 @@ const Navbar = () => {
         <NavLink to="/" className="text-white text-2xl font-bold">
           LearnSphere
         </NavLink>
-        <div className="space-x-4">
+        <div className="space-x-4 flex items-center">
+          <NavLink to="/" className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300">
+            Home
+          </NavLink>
+          <NavLink to="/about" className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300">
+            About Us
+          </NavLink>
+          <NavLink to="/contact" className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300">
+            Contact Us
+          </NavLink>
           {user ? (
             <>
               <NavLink
