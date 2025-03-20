@@ -1,14 +1,15 @@
 const mongoose = require('mongoose');
 
 const webinarSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
   title: { type: String, required: true },
-  description: { type: String },
+  webinarId: { type: String, unique: true, required: true },
+  description: { type: String, required: true },
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
-  link: { type: String, required: true },
+  meetLink: { type: String, required: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  tags: [String],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Webinar', webinarSchema);
