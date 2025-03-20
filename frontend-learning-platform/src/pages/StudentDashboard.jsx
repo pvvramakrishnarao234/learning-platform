@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import JobPostForm from '../components/JobPostForm';
+import JobPostForm from '../components/JobPostForm'; // Verify this import
 
 const StudentDashboard = () => {
   const { user, token } = useAuth();
