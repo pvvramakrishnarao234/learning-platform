@@ -4,38 +4,45 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // Check for token in cookies on mount
   useEffect(() => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-    if (token) {
-      // Decode token or fetch user data (simplified here)
-      // For now, we'll assume token contains role and id
+    const storedToken = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+    if (storedToken) {
       try {
         fetch('/api/profiles', {
-          headers: { 'Authorization': `Bearer ${token}` },
+          headers: { 'Authorization': `Bearer ${storedToken}` },
         })
           .then(res => res.json())
-          .then(data => setUser({ id: data.user._id, role: data.user.role, name: `${data.user.firstName} ${data.user.lastName}` }))
-          .catch(() => setUser(null));
+          .then(data => {
+            setUser({ id: data.user._id, role: data.user.role, name: `${data.user.firstName} ${data.user.lastName}` });
+            setToken(storedToken);
+          })
+          .catch(() => {
+            setUser(null);
+            setToken(null);
+          });
       } catch (error) {
         setUser(null);
+        setToken(null);
       }
     }
   }, []);
 
-  const login = (userData, token) => {
+  const login = (userData, authToken) => {
     setUser(userData);
-    document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+    setToken(authToken);
+    document.cookie = `token=${authToken}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
   };
 
   const logout = () => {
     setUser(null);
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'; // Clear cookie
+    setToken(null);
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

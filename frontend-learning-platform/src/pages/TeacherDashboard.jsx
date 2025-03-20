@@ -1,26 +1,39 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import WebinarForm from '../components/WebinarForm';
+import { useNavigate } from 'react-router-dom';
 
 const TeacherDashboard = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [profile, setProfile] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [webinars, setWebinars] = useState([]);
   const [jobsApplied, setJobsApplied] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) {
+        setError('No authentication token found');
+        setLoading(false);
+        return;
+      }
+
       try {
+        const headers = { 'Authorization': `Bearer ${token}` };
         const [profileRes, webinarsRes] = await Promise.all([
-          fetch('/api/profiles', { headers: { 'Authorization': `Bearer ${document.cookie.split('token=')[1]}` } }),
-          fetch('/api/webinars', { headers: { 'Authorization': `Bearer ${document.cookie.split('token=')[1]}` } }),
+          fetch('/api/profiles', { headers }),
+          fetch('/api/webinars', { headers }),
         ]);
-        if (!profileRes.ok || !webinarsRes.ok) throw new Error('Failed to fetch data');
+
+        if (!profileRes.ok) throw new Error(`Profile fetch failed: ${profileRes.statusText}`);
+        if (!webinarsRes.ok) throw new Error(`Webinars fetch failed: ${webinarsRes.statusText}`);
+
         const profileData = await profileRes.json();
         const webinarsData = await webinarsRes.json();
+
         setProfile(profileData);
         setWebinars(webinarsData.filter(w => w.creator === user.id));
         setJobsApplied(profileData.jobsApplied || []);
@@ -30,17 +43,18 @@ const TeacherDashboard = () => {
         setLoading(false);
       }
     };
+
     if (user?.role === 'teacher') fetchData();
-  }, [user]);
+  }, [user, token]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch('/api/profiles', {
         method: 'PUT',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.split('token=')[1]}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(profile),
       });
@@ -59,11 +73,11 @@ const TeacherDashboard = () => {
     try {
       const res = await fetch('/api/webinars', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.split('token=')[1]}`,
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(webinarData),
+        body: JSON.stringify({ ...webinarData, creator: user.id }),
       });
       if (res.ok) {
         const newWebinar = await res.json();
@@ -85,30 +99,79 @@ const TeacherDashboard = () => {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">Teacher Dashboard</h2>
-      
+
       {/* Profile Edit Section */}
       <section className="mb-8">
         <h3 className="text-xl font-semibold text-blue-600 mb-4">Profile</h3>
         {editMode ? (
           <form onSubmit={handleProfileUpdate} className="space-y-4">
-            <input type="text" name="bio" value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} className="w-full p-3 border rounded-md" />
-            <input type="text" name="location" value={profile.location} onChange={(e) => setProfile({ ...profile, location: e.target.value })} className="w-full p-3 border rounded-md" />
-            <input type="text" name="timings" value={profile.timings} onChange={(e) => setProfile({ ...profile, timings: e.target.value })} className="w-full p-3 border rounded-md" />
-            <input type="text" name="contactNumber" value={profile.contactNumber} onChange={(e) => setProfile({ ...profile, contactNumber: e.target.value })} className="w-full p-3 border rounded-md" />
-            <input type="text" name="languagesSpoken" value={profile.languagesSpoken.join(',')} onChange={(e) => setProfile({ ...profile, languagesSpoken: e.target.value.split(',') })} className="w-full p-3 border rounded-md" />
-            <input type="text" name="tags" value={profile.tags.join(',')} onChange={(e) => setProfile({ ...profile, tags: e.target.value.split(',') })} className="w-full p-3 border rounded-md" />
-            <button type="submit" className="bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">Save</button>
-            <button type="button" onClick={() => setEditMode(false)} className="bg-gray-600 text-white p-3 rounded-md hover:bg-gray-700 ml-2">Cancel</button>
+            <input
+              type="text"
+              name="bio"
+              value={profile.bio || ''}
+              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+              className="w-full p-3 border rounded-md"
+            />
+            <input
+              type="text"
+              name="location"
+              value={profile.location || ''}
+              onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+              className="w-full p-3 border rounded-md"
+            />
+            <input
+              type="text"
+              name="timings"
+              value={profile.timings || ''}
+              onChange={(e) => setProfile({ ...profile, timings: e.target.value })}
+              className="w-full p-3 border rounded-md"
+            />
+            <input
+              type="text"
+              name="contactNumber"
+              value={profile.contactNumber || ''}
+              onChange={(e) => setProfile({ ...profile, contactNumber: e.target.value })}
+              className="w-full p-3 border rounded-md"
+            />
+            <input
+              type="text"
+              name="languagesSpoken"
+              value={profile.languagesSpoken.join(',') || ''}
+              onChange={(e) => setProfile({ ...profile, languagesSpoken: e.target.value.split(',') })}
+              className="w-full p-3 border rounded-md"
+            />
+            <input
+              type="text"
+              name="tags"
+              value={profile.tags.join(',') || ''}
+              onChange={(e) => setProfile({ ...profile, tags: e.target.value.split(',') })}
+              className="w-full p-3 border rounded-md"
+            />
+            <button type="submit" className="bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700">
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditMode(false)}
+              className="bg-gray-600 text-white p-3 rounded-md hover:bg-gray-700 ml-2"
+            >
+              Cancel
+            </button>
           </form>
         ) : (
           <div>
-            <p><strong>Bio:</strong> {profile.bio}</p>
-            <p><strong>Location:</strong> {profile.location}</p>
-            <p><strong>Timings:</strong> {profile.timings}</p>
-            <p><strong>Contact:</strong> {profile.contactNumber}</p>
-            <p><strong>Languages:</strong> {profile.languagesSpoken.join(', ')}</p>
-            <p><strong>Tags:</strong> {profile.tags.join(', ')}</p>
-            <button onClick={() => setEditMode(true)} className="mt-4 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Edit Profile</button>
+            <p><strong>Bio:</strong> {profile.bio || 'Not set'}</p>
+            <p><strong>Location:</strong> {profile.location || 'Not set'}</p>
+            <p><strong>Timings:</strong> {profile.timings || 'Not set'}</p>
+            <p><strong>Contact:</strong> {profile.contactNumber || 'Not set'}</p>
+            <p><strong>Languages:</strong> {profile.languagesSpoken.join(', ') || 'Not set'}</p>
+            <p><strong>Tags:</strong> {profile.tags.join(', ') || 'Not set'}</p>
+            <button
+              onClick={() => setEditMode(true)}
+              className="mt-4 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"
+            >
+              Edit Profile
+            </button>
           </div>
         )}
       </section>
