@@ -3,13 +3,18 @@ const logger = require('./logger');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
+    console.log(process.env.MONGO_URI)
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+      throw new Error('MONGO_URI is not defined in .env');
+    }
+    await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    logger.info(`MongoDB Connected: ${conn.connection.host}`);
+    logger.info('MongoDB Connected: ' + mongoose.connection.host);
   } catch (error) {
-    logger.error(`MongoDB Connection Error: ${error.message}`);
+    logger.error('MongoDB Connection Error: ' + error.message);
     process.exit(1);
   }
 };

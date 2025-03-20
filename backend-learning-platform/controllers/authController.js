@@ -11,59 +11,22 @@ const transporter = require('../config/email');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.signup = async (req, res) => {
-  const {
-    role, firstName, lastName, email, password, retypePassword,
-    bio, description, services, profilePicture, location, timings, languagesSpoken, tags, contactNumber
-  } = req.body;
-
-  if (password !== retypePassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
-  }
-
+  const { firstName, lastName, email, password, role } = req.body;
   try {
     let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
+    if (user) return res.status(400).json({ message: 'User already exists' });
 
-    user = new User({
-      role,
-      firstName,
-      lastName,
-      email,
-      password,
-      profilePicture: profilePicture || 'default-avatar.png',
-    });
+    user = new User({ firstName, lastName, email, password, role });
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
     await user.save();
 
-    if (role === 'teacher') {
-      const teacherProfile = new TeacherProfile({
-        user: user._id,
-        bio,
-        description,
-        services: services || [],
-        location,
-        timings,
-        languagesSpoken: languagesSpoken || [],
-        tags: tags || [],
-        contactNumber,
-      });
-      await teacherProfile.save();
-    } else if (role === 'student') {
-      const studentProfile = new StudentProfile({ user: user._id });
-      await studentProfile.save();
-    }
+    const payload = { id: user.id, role: user.role };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
+    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
     logger.info(`User signed up: ${email}`);
-    res.status(201).json({
-      token,
-      userId: user._id,
-      role: user.role,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    });
+    res.status(201).json({ token, user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
     logger.error(`Signup error: ${error.message}`);
     res.status(500).json({ message: 'Server error' });
@@ -71,28 +34,25 @@ exports.signup = async (req, res) => {
 };
 
 exports.signin = async (req, res) => {
-  const { email, password, rememberMe } = req.body;
+  const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: rememberMe ? '7d' : '1h',
-    });
-    res.cookie('token', token, {
-      httpOnly: true,
-      maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
-    });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+    const payload = { id: user.id, role: user.role };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
     logger.info(`User signed in: ${email}`);
-    res.json({ token, userId: user._id, role: user.role, firstName: user.firstName, lastName: user.lastName });
+    res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
   } catch (error) {
     logger.error(`Signin error: ${error.message}`);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 exports.googleSignin = async (req, res) => {
   const { token, role } = req.body;
   try {
