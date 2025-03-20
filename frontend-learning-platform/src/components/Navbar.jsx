@@ -23,7 +23,7 @@ const Navbar = () => {
           {user ? (
             <>
               <NavLink
-                to="/profile-settings"
+                to="/dashboard"
                 className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300"
               >
                 {user.name} ({user.role})
