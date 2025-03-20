@@ -12,6 +12,8 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherProfilePublic from './pages/TeacherProfilePublic';
 import StudentDashboard from './pages/StudentDashboard';
 import StudentProfilePublic from './pages/StudentProfilePublic';
+import WebinarsViewAll from './pages/WebinarsViewAll';
+import JobsViewAll from './pages/JobsViewAll';
 
 const App = () => {
   const { user } = useAuth();
@@ -44,6 +46,8 @@ const App = () => {
         />
         <Route path="/teacher/:teacherId" element={<TeacherProfilePublic />} />
         <Route path="/student/:studentId" element={<StudentProfilePublic />} />
+        <Route path="/webinars" element={<WebinarsViewAll />} />
+        <Route path="/jobs" element={<JobsViewAll />} />
       </Route>
     </Routes>
   );

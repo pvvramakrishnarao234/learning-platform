@@ -20,6 +20,12 @@ const Navbar = () => {
           <NavLink to="/contact" className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300">
             Contact Us
           </NavLink>
+          <NavLink to="/webinars" className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300">
+            Webinars
+          </NavLink>
+          <NavLink to="/jobs" className="text-white hover:bg-blue-700 px-3 py-2 rounded-md transition duration-300">
+            Jobs
+          </NavLink>
           {user ? (
             <>
               <NavLink
