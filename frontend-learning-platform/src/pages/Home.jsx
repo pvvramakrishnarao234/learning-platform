@@ -26,7 +26,7 @@ const Home = () => {
             to="/signup/teacher"
             className="bg-transparent border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-md font-semibold hover:bg-blue-600 hover:text-white transition duration-300"
           >
-            Join as Teacher
+            Join as  professional Teacher
           </Link>
         </div>
       </section>
