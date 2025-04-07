@@ -1,7 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const cookieParser = require('cookie-parser'); // Added for cookie handling
+const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 const connectDB = require('./config/db');
 const logger = require('./config/logger');
 const errorHandler = require('./middleware/errorMiddleware');
@@ -9,22 +10,34 @@ const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const webinarRoutes = require('./routes/webinarRoutes');
 const jobRoutes = require('./routes/jobRoutes');
+const courseRoutes = require('./routes/courseRoutes');
 
+// Load environment variables
 dotenv.config();
+
+// Connect to database
 connectDB();
 
+// Initialize express app
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
-app.use(cookieParser()); // For JWT cookies
+app.use(cookieParser());
+app.use(morgan('dev'));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/webinars', webinarRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api/courses', courseRoutes);
 
 // Error Handler
 app.use(errorHandler);
@@ -35,6 +48,26 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
 });
+
+// Handle unhandled promise rejections
+global.process.on('unhandledRejection', (err) => {
+  logger.error(`Unhandled Rejection: ${err.message}`);
+  server.close(() => process.exit(1));
+});
+
+// Graceful shutdown on process termination
+global.process.on('SIGTERM', () => {
+  logger.info('SIGTERM received, shutting down gracefully');
+  server.close(() => process.exit(0));
+});
+
+
+
+
+
+
+
+

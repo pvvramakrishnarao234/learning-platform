@@ -1,106 +1,111 @@
-const Webinar = require('../models/Webinar');
-const StudentProfile = require('../models/StudentProfile');
-const logger = require('../config/logger');
-const { v4: uuidv4 } = require('uuid');
+const asyncHandler = require('express-async-handler');
+const Webinar = require('../models/Webinar'); // Assuming a Webinar model exists
 
-exports.createWebinar = async (req, res) => {
-  const { title, description, startTime, endTime, meetLink, tags } = req.body;
-  try {
-    const webinar = new Webinar({
-      title,
-      webinarId: uuidv4(),
-      description,
-      startTime,
-      endTime,
-      meetLink,
-      creator: req.user.id,
-      tags: tags || [],
-    });
-    await webinar.save();
-    logger.info(`Webinar created by ${req.user.id}: ${title}`);
-    res.status(201).json(webinar);
-  } catch (error) {
-    logger.error(`Create webinar error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+// @desc    Create a new webinar
+// @route   POST /api/webinars
+// @access  Teacher Only
+const createWebinar = asyncHandler(async (req, res) => {
+  const { title, description, date, duration } = req.body;
+  
+  if (!title || !description || !date || !duration) {
+    res.status(400);
+    throw new Error('All fields are required');
   }
-};
 
-exports.getWebinars = async (req, res) => {
-  try {
-    const webinars = await Webinar.find({ creator: req.user.id }).populate('applicants', 'firstName lastName');
-    res.json(webinars);
-  } catch (error) {
-    logger.error(`Get webinars error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+  const webinar = await Webinar.create({
+    title,
+    description,
+    date,
+    duration,
+    createdBy: req.user.id,
+  });
+
+  res.status(201).json({ success: true, webinar });
+});
+
+// @desc    Get all webinars (Public route)
+// @route   GET /api/webinars/all
+// @access  Public
+const getAllWebinars = asyncHandler(async (req, res) => {
+  const webinars = await Webinar.find();
+  res.status(200).json({ success: true, webinars });
+});
+
+// @desc    Get webinars created by the authenticated teacher
+// @route   GET /api/webinars
+// @access  Teacher Only
+const getWebinars = asyncHandler(async (req, res) => {
+  const webinars = await Webinar.find({ createdBy: req.user.id });
+  res.status(200).json({ success: true, webinars });
+});
+
+// @desc    Update a webinar
+// @route   PUT /api/webinars/:webinarId
+// @access  Teacher Only
+const updateWebinar = asyncHandler(async (req, res) => {
+  const webinar = await Webinar.findById(req.params.webinarId);
+
+  if (!webinar) {
+    res.status(404);
+    throw new Error('Webinar not found');
   }
-};
 
-exports.getAllWebinars = async (req, res) => {
-  const { search, date, teacher, tags } = req.query;
-  try {
-    let query = {};
-    if (search) query.title = { $regex: search, $options: 'i' };
-    if (date) query.startTime = { $gte: new Date(date) };
-    if (teacher) query.creator = teacher;
-    if (tags) query.tags = { $in: tags.split(',') };
-
-    const webinars = await Webinar.find(query).populate('creator', 'firstName lastName');
-    res.json(webinars);
-  } catch (error) {
-    logger.error(`Get all webinars error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+  if (webinar.createdBy.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error('Not authorized to update this webinar');
   }
-};
 
-exports.updateWebinar = async (req, res) => {
-  const { webinarId } = req.params;
-  const updates = req.body;
-  try {
-    const webinar = await Webinar.findOneAndUpdate(
-      { webinarId, creator: req.user.id },
-      { $set: updates },
-      { new: true, runValidators: true }
-    );
-    if (!webinar) return res.status(404).json({ message: 'Webinar not found or unauthorized' });
-    logger.info(`Webinar updated by ${req.user.id}: ${webinar.title}`);
-    res.json(webinar);
-  } catch (error) {
-    logger.error(`Update webinar error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+  const updatedWebinar = await Webinar.findByIdAndUpdate(req.params.webinarId, req.body, { new: true });
+  res.status(200).json({ success: true, updatedWebinar });
+});
 
-exports.deleteWebinar = async (req, res) => {
-  const { webinarId } = req.params;
-  try {
-    const webinar = await Webinar.findOneAndDelete({ webinarId, creator: req.user.id });
-    if (!webinar) return res.status(404).json({ message: 'Webinar not found or unauthorized' });
-    logger.info(`Webinar deleted by ${req.user.id}: ${webinar.title}`);
-    res.json({ message: 'Webinar deleted' });
-  } catch (error) {
-    logger.error(`Delete webinar error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+// @desc    Delete a webinar
+// @route   DELETE /api/webinars/:webinarId
+// @access  Teacher Only
+const deleteWebinar = asyncHandler(async (req, res) => {
+  const webinar = await Webinar.findById(req.params.webinarId);
 
-exports.applyWebinar = async (req, res) => {
-  const { webinarId } = req.params;
-  try {
-    const webinar = await Webinar.findOne({ webinarId });
-    if (!webinar) return res.status(404).json({ message: 'Webinar not found' });
-    if (webinar.applicants.includes(req.user.id)) {
-      return res.status(400).json({ message: 'Already applied' });
-    }
-    webinar.applicants.push(req.user.id);
-    await webinar.save();
-    await StudentProfile.findOneAndUpdate(
-      { user: req.user.id },
-      { $push: { webinarsApplied: webinar._id } }
-    );
-    logger.info(`User ${req.user.id} applied to webinar: ${webinar.title}`);
-    res.json({ message: 'Applied successfully' });
-  } catch (error) {
-    logger.error(`Apply webinar error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+  if (!webinar) {
+    res.status(404);
+    throw new Error('Webinar not found');
   }
+
+  if (webinar.createdBy.toString() !== req.user.id) {
+    res.status(403);
+    throw new Error('Not authorized to delete this webinar');
+  }
+
+  await webinar.remove();
+  res.status(200).json({ success: true, message: 'Webinar deleted' });
+});
+
+// @desc    Apply for a webinar (Student only)
+// @route   POST /api/webinars/:webinarId/apply
+// @access  Student Only
+const applyWebinar = asyncHandler(async (req, res) => {
+  const webinar = await Webinar.findById(req.params.webinarId);
+
+  if (!webinar) {
+    res.status(404);
+    throw new Error('Webinar not found');
+  }
+
+  if (webinar.applicants.includes(req.user.id)) {
+    res.status(400);
+    throw new Error('Already applied for this webinar');
+  }
+
+  webinar.applicants.push(req.user.id);
+  await webinar.save();
+
+  res.status(200).json({ success: true, message: 'Applied successfully' });
+});
+
+module.exports = {
+  createWebinar,
+  getWebinars,
+  getAllWebinars,
+  updateWebinar,
+  deleteWebinar,
+  applyWebinar,
 };

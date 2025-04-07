@@ -7,7 +7,8 @@ const {
   deleteWebinar,
   applyWebinar,
 } = require('../controllers/webinarController');
-const { authMiddleware, roleMiddleware } = require('../middleware/authMiddleware');
+const  authMiddleware = require('../middleware/authMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
 const router = express.Router();
 
 router.post('/', authMiddleware, roleMiddleware(['teacher']), createWebinar);

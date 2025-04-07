@@ -1,20 +1,52 @@
 const express = require('express');
-const {
-  createJobPost,
-  getJobPosts,
-  getAllJobPosts,
-  updateJobPost,
-  deleteJobPost,
-  applyJobPost,
-} = require('../controllers/jobController');
-const { authMiddleware, roleMiddleware } = require('../middleware/authMiddleware');
 const router = express.Router();
+const jobController = require('../controllers/jobController');
+const authMiddleware= require('../middleware/authMiddleware');
+const validateRequest = require('../middleware/validateRequest');
+const jobValidation = require('../validations/jobValidations');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
-router.post('/', authMiddleware, roleMiddleware(['student']), createJobPost);
-router.get('/', authMiddleware, roleMiddleware(['student']), getJobPosts);
-router.get('/all', getAllJobPosts); // Public route
-router.put('/:jobId', authMiddleware, roleMiddleware(['student']), updateJobPost);
-router.delete('/:jobId', authMiddleware, roleMiddleware(['student']), deleteJobPost);
-router.post('/:jobId/apply', authMiddleware, roleMiddleware(['teacher']), applyJobPost);
+// Public routes
+router.get('/all', jobController.getAllJobPosts);
+
+// Student-protected routes
+router.post(
+  '/',
+  authMiddleware,
+  roleMiddleware('student'),
+  validateRequest,
+  jobController.createJobPost
+);
+
+router.get(
+  '/',
+  authMiddleware,
+  roleMiddleware('student', 'teacher'), // Allow both students and teachers
+  jobController.getJobPosts
+);
+
+router.put(
+  '/:jobId',
+  authMiddleware,
+  roleMiddleware('student'),
+  validateRequest,
+  jobController.updateJobPost
+);
+
+router.delete(
+  '/:jobId',
+  authMiddleware,
+  roleMiddleware('student'),
+  jobController.deleteJobPost
+);
+
+// Teacher-specific route
+router.post(
+  '/:jobId/apply',
+  authMiddleware,
+  roleMiddleware('teacher'),
+  validateRequest,
+  jobController.applyJobPost
+);
 
 module.exports = router;

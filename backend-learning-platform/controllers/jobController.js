@@ -1,106 +1,94 @@
-const JobPost = require('../models/JobPost');
-const TeacherProfile = require('../models/TeacherProfile');
-const logger = require('../config/logger');
-const { v4: uuidv4 } = require('uuid');
+const Job = require("../models/JobPost"); // Assuming Job is a Mongoose model
+const asyncHandler = require("express-async-handler");
 
-exports.createJobPost = async (req, res) => {
-  const { title, description, tags } = req.body;
-  try {
-    const jobPost = new JobPost({
-      jobId: uuidv4(),
-      title,
-      description,
-      creator: req.user.id,
-      tags: tags || [],
-    });
-    await jobPost.save();
-    await StudentProfile.findOneAndUpdate(
-      { user: req.user.id },
-      { $push: { jobsPosted: jobPost._id } }
-    );
-    logger.info(`Job post created by ${req.user.id}: ${title}`);
-    res.status(201).json(jobPost);
-  } catch (error) {
-    logger.error(`Create job post error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+
+const getAllJobPosts = asyncHandler(async (req, res) => {
+  const jobs = await Job.find();
+  res.status(200).json(jobs);
+});
+
+
+const getJobPosts = asyncHandler(async (req, res) => {
+  const jobs = await Job.find();
+  res.status(200).json(jobs);
+});
+
+
+const createJobPost = asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
+
+  if (!title || !description) {
+    return res.status(400).json({ error: "Title and description are required" });
   }
-};
 
-exports.getJobPosts = async (req, res) => {
-  try {
-    const jobPosts = await JobPost.find({ creator: req.user.id }).populate('applicants', 'firstName lastName');
-    res.json(jobPosts);
-  } catch (error) {
-    logger.error(`Get job posts error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+  const job = new Job({
+    title,
+    description,
+    createdBy: req.user.id, // Assuming user is authenticated
+  });
 
-exports.getAllJobPosts = async (req, res) => {
-  const { search, date, tags } = req.query;
-  try {
-    let query = {};
-    if (search) query.title = { $regex: search, $options: 'i' };
-    if (date) query.createdAt = { $gte: new Date(date) };
-    if (tags) query.tags = { $in: tags.split(',') };
+  await job.save();
+  res.status(201).json(job);
+});
 
-    const jobPosts = await JobPost.find(query).populate('creator', 'firstName lastName');
-    res.json(jobPosts);
-  } catch (error) {
-    logger.error(`Get all job posts error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
-exports.updateJobPost = async (req, res) => {
+const updateJobPost = asyncHandler(async (req, res) => {
   const { jobId } = req.params;
-  const updates = req.body;
-  try {
-    const jobPost = await JobPost.findOneAndUpdate(
-      { jobId, creator: req.user.id },
-      { $set: updates },
-      { new: true, runValidators: true }
-    );
-    if (!jobPost) return res.status(404).json({ message: 'Job post not found or unauthorized' });
-    logger.info(`Job post updated by ${req.user.id}: ${jobPost.title}`);
-    res.json(jobPost);
-  } catch (error) {
-    logger.error(`Update job post error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+  const job = await Job.findById(jobId);
 
-exports.deleteJobPost = async (req, res) => {
-  const { jobId } = req.params;
-  try {
-    const jobPost = await JobPost.findOneAndDelete({ jobId, creator: req.user.id });
-    if (!jobPost) return res.status(404).json({ message: 'Job post not found or unauthorized' });
-    logger.info(`Job post deleted by ${req.user.id}: ${jobPost.title}`);
-    res.json({ message: 'Job post deleted' });
-  } catch (error) {
-    logger.error(`Delete job post error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+  if (!job) {
+    return res.status(404).json({ error: "Job not found" });
   }
-};
 
-exports.applyJobPost = async (req, res) => {
-  const { jobId } = req.params;
-  try {
-    const jobPost = await JobPost.findOne({ jobId });
-    if (!jobPost) return res.status(404).json({ message: 'Job post not found' });
-    if (jobPost.applicants.includes(req.user.id)) {
-      return res.status(400).json({ message: 'Already applied' });
-    }
-    jobPost.applicants.push(req.user.id);
-    await jobPost.save();
-    await TeacherProfile.findOneAndUpdate(
-      { user: req.user.id },
-      { $push: { jobsApplied: jobPost._id } }
-    );
-    logger.info(`User ${req.user.id} applied to job: ${jobPost.title}`);
-    res.json({ message: 'Applied successfully' });
-  } catch (error) {
-    logger.error(`Apply job post error: ${error.message}`);
-    res.status(500).json({ message: 'Server error' });
+  if (job.createdBy.toString() !== req.user.id) {
+    return res.status(403).json({ error: "Not authorized to update this job" });
   }
+
+  const updatedJob = await Job.findByIdAndUpdate(jobId, req.body, { new: true });
+  res.status(200).json(updatedJob);
+});
+
+
+const deleteJobPost = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+  const job = await Job.findById(jobId);
+
+  if (!job) {
+    return res.status(404).json({ error: "Job not found" });
+  }
+
+  if (job.createdBy.toString() !== req.user.id) {
+    return res.status(403).json({ error: "Not authorized to delete this job" });
+  }
+
+  await job.remove();
+  res.status(200).json({ message: "Job deleted successfully" });
+});
+
+
+const applyJobPost = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+  const job = await Job.findById(jobId);
+
+  if (!job) {
+    return res.status(404).json({ error: "Job not found" });
+  }
+
+  if (job.applicants.includes(req.user.id)) {
+    return res.status(400).json({ error: "Already applied for this job" });
+  }
+
+  job.applicants.push(req.user.id);
+  await job.save();
+
+  res.status(200).json({ message: "Job application submitted successfully" });
+});
+
+module.exports = {
+  getAllJobPosts,
+  getJobPosts,
+  createJobPost,
+  updateJobPost,
+  deleteJobPost,
+  applyJobPost,
 };

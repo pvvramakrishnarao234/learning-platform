@@ -1,28 +1,81 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const logger = require('../config/logger');
 
-const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(' ')[1]; // Support both cookies and headers
+/**
+ * Authentication middleware that verifies JWT tokens
+ */
+const authMiddleware = async (req, res, next) => {
+  const token = extractToken(req);
+  
   if (!token) {
-    logger.error('No token provided');
-    return res.status(401).json({ message: 'No token provided' });
+    logger.warn('Authentication attempt without token', { path: req.path });
+    return sendUnauthorized(res, 'Authentication token required');
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id, role }
+    const decoded = verifyToken(token);
+    const user = await fetchAuthenticatedUser(decoded.id);
+    
+    if (!user) {
+      logger.warn('Token valid but user not found', { userId: decoded.id });
+      return sendUnauthorized(res, 'User not found');
+    }
+
+    attachUserToRequest(req, user);
+    logger.debug('User authenticated', { userId: user._id, role: user.role });
     next();
   } catch (error) {
-    logger.error(`Token verification failed: ${error.message}`);
-    res.status(401).json({ message: 'Invalid token' });
+    handleAuthError(error, res, req);
   }
 };
 
-const roleMiddleware = (roles) => (req, res, next) => {
-  if (!roles.includes(req.user.role)) {
-    return res.status(403).json({ message: 'Access denied' });
-  }
-  next();
+// Helper functions
+const extractToken = (req) => {
+  return req.cookies?.token || 
+         req.headers.authorization?.replace('Bearer ', '') || 
+         req.query?.token;
 };
 
-module.exports = { authMiddleware, roleMiddleware };
+const verifyToken = (token) => {
+  return jwt.verify(token, process.env.JWT_SECRET);
+};
+
+const fetchAuthenticatedUser = async (userId) => {
+  return await User.findById(userId)
+    .select('-password -__v -refreshToken')
+    .lean();
+};
+
+const attachUserToRequest = (req, user) => {
+  req.user = user;
+  req.roles = [user.role]; // For role-based access control
+};
+
+const sendUnauthorized = (res, message) => {
+  return res.status(401).json({ 
+    success: false,
+    message,
+    code: 'UNAUTHORIZED'
+  });
+};
+
+const handleAuthError = (error, res, req) => {
+  logger.error('Authentication failed', { 
+    error: error.message,
+    path: req.path,
+    stack: error.stack 
+  });
+
+  const message = error.name === 'TokenExpiredError' 
+    ? 'Token expired' 
+    : 'Invalid authentication token';
+
+  res.status(401).json({
+    success: false,
+    message,
+    code: error.name || 'AUTH_ERROR'
+  });
+};
+
+module.exports = authMiddleware;

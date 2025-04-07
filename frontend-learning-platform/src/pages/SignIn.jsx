@@ -18,17 +18,26 @@ const SignIn = () => {
       const res = await fetch(formData.role === 'admin' ? '/api/auth/admin/signin' : '/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        credentials: 'include',
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
       });
       const data = await res.json();
       if (res.ok) {
-        login({ id: data.userId, role: formData.role, name: 'User' }, data.token); // Replace 'User' with actual name from backend
+        login({
+          id: data.user.id,
+          role: data.user.role,
+          name: `${data.user.firstName} ${data.user.lastName}`
+        }, data.token);
         navigate('/');
       } else {
-        alert(data.message);
+        alert(data.message || 'Invalid credentials');
       }
     } catch (error) {
       console.error('Signin error:', error);
+      alert('An error occurred during sign in');
     }
   };
 
@@ -64,7 +73,7 @@ const SignIn = () => {
         <a href="/forgot-password" className="text-blue-600 hover:underline">Forgot Password?</a>
       </p>
       <p className="mt-2 text-center">
-        Don’t have an account?{' '}
+        Don't have an account?{' '}
         <a href="/signup/student" className="text-blue-600 hover:underline">Sign Up</a>
       </p>
     </div>
