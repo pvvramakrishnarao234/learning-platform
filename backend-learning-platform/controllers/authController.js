@@ -157,7 +157,7 @@ exports.signin = async (req, res) => {
     console.log('Input Password:', `'${password}'`);
     console.log('Stored Hash:', `'${user.password}'`);
   
-    const isMatch = await bcrypt.compare(password.trim(), user.password.trim());
+    const isMatch = await bcrypt.compare(password.trim(),user.password);
     console.log('bcrypt.compare result:', isMatch);
   
     logger.info(`Password match result: ${isMatch}`, { email, role });
