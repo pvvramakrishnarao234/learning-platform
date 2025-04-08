@@ -14,6 +14,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import StudentProfilePublic from './pages/StudentProfilePublic';
 import WebinarsViewAll from './pages/WebinarsViewAll';
 import JobsViewAll from './pages/JobsViewAll';
+import Homepage from './pages-a/Homepage';
 
 const App = () => {
   const { user } = useAuth();
@@ -21,7 +22,7 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<Home />} />
+        <Route index element={<Homepage />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/signup/student" element={<SignUpStudent />} />
