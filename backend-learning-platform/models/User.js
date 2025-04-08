@@ -6,93 +6,24 @@ const { toLower } = require('../utils/sanitizers');
 
 const roles = ['student', 'teacher', 'admin'];
 
-const userSchema = new mongoose.Schema(
-  {
-    role: {
-      type: String,
-      enum: roles,
-      required: true,
-      default: 'student',
-      index: true, // Indexing for faster queries
-    },
-    firstName: {
-      type: String,
-      required: [true, 'First name is required'],
-      trim: true,
-      maxlength: [50, 'First name cannot exceed 50 characters'],
-      match: [/^[a-zA-Z\s\-']+$/, 'Please enter a valid first name'],
-    },
-    lastName: {
-      type: String,
-      required: [true, 'Last name is required'],
-      trim: true,
-      maxlength: [50, 'Last name cannot exceed 50 characters'],
-      match: [/^[a-zA-Z\s\-']+$/, 'Please enter a valid last name'],
-    },
-    email: {
-      type: String,
-      required: [true, 'Email is required'],
-      unique: true,
-      trim: true,
-      lowercase: true,
-      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email'],
-      index: true,
-    },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
-      minlength: [12, 'Password must be at least 12 characters long'],
-      select: false,
-    },
-    passwordChangedAt: Date,
-    passwordResetToken: String,
-    passwordResetExpires: Date,
-    profilePicture: {
-      type: String,
-      default: 'default-avatar.png',
-      validate: [validator.isURL, 'Please provide a valid URL'],
-    },
-    googleAuthId: {
-      type: String,
-      unique: true,
-      sparse: true,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-      select: false,
-    },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    verificationToken: String,
-    resetPasswordToken: String,
-    resetPasswordExpires: Date,
-    lastLogin: {
-      type: Date,
-      default: Date.now,
-    },
-
-    // Dynamic reference to either StudentProfile or TeacherProfile
-    profile: {
-      type: mongoose.Schema.Types.ObjectId,
-      refPath: 'profileModel', // Dynamically reference the model
-    },
-    profileModel: {
-      type: String,
-      enum: ['StudentProfile', 'TeacherProfile'], // Allowed models
-    },
+const userSchema = new mongoose.Schema({
+  firstName: { type: String, required: true, trim: true },
+  lastName: { type: String, required: true, trim: true },
+  email: { type: String, required: true, lowercase: true, trim: true },
+  password: {
+    type: String,
+    required: true,
+    select: false
   },
-  {
-    timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
-);
+  role: { type: String, required: true, enum: ['student', 'teacher', 'admin'] },
+  isVerified: { type: Boolean, default: false },
+  verificationToken: { type: String },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+}, { timestamps: true });
 
 // Indexes
-userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ email: 1, role: 1 }, { unique: true });
 userSchema.index({ googleAuthId: 1 }, { sparse: true });
 
 // Sanitize email before saving
