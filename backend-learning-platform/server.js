@@ -14,6 +14,7 @@ const courseRoutes = require('./routes/courseRoutes');
 
 // Load environment variables
 dotenv.config();
+logger.info(`JWT_SECRET loaded: ${process.env.JWT_SECRET}`);
 
 // Connect to database
 connectDB();
