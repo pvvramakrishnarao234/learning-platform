@@ -18,14 +18,14 @@ const FeaturedTutors = () => {
   ];
 
   return (
-    <section className="py-12 px-6">
+    <section className="flex flex-col justify-center min-h-screen py-12 px-6">
       <h2 className="text-3xl font-bold text-center mb-6">Featured Tutors</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {tutors.map((tutor) => (
           <TutorCard key={tutor.name} {...tutor} />
         ))}
       </div>
-      <a href="#browse" className="text-blue-600 mt-4 inline-block hover:text-blue-800">Browse All Tutors</a>
+      <a href="#browse" className="text-blue-600 mt-4 inline-block hover:text-blue-800 text-center block">Browse All Tutors</a>
     </section>
   );
 };

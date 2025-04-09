@@ -1,21 +1,23 @@
 import React from 'react';
-import Header from '../components-a/Header';
-import AboutSection from '../components-a/AboutSection';
-import StatsBanner from '../components-a/StatsBanner';
-import MissionSection from '../components-a/MissionSection';
-import TeamSection from '../components-a/TeamSection';
-import ContactSection from '../components-a/ContactSection';
+import Hero from '../components-a/About/Hero';
+import AboutSection from '../components-a/About/AboutSection';
+import Stats from  '../components-a/About/Stats';
+import MissionSection from '../components-a/About/MissionSection';
+import TeamSection from '../components-a/About/TeamSection';
+import ContactSection from '../components-a/About/ContactSection';
+import Navbar from '../components-a/Header';
 import Footer from '../components-a/Footer';
 
 const About = () => {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col flex-grow">
+        <Hero />
+        <Stats />
+        <AboutSection />
+        <MissionSection />
+        <TeamSection />
+        <ContactSection />
 
-      <AboutSection />
-      <StatsBanner />
-      <MissionSection />
-      <TeamSection />
-      <ContactSection />
     </div>
   );
 };

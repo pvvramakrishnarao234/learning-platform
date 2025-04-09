@@ -1,18 +1,21 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <header className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
-      <div className="text-xl font-bold text-blue-900">EduNexum</div>
-      <nav className="flex space-x-6">
-        <a href="#find-tutor" className="text-blue-600 hover:text-blue-800">Find Tutor</a>
-        <a href="#become-tutor" className="text-blue-600 hover:text-blue-800">Become a Tutor</a>
-        <a href="#contact" className="text-blue-600 hover:text-blue-800">Contact</a>
-        <button className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-          Login
-        </button>
-      </nav>
-    </header>
+    <nav className="flex items-center justify-between py-4 px-6 bg-white">
+      <div className="text-xl font-bold text-blue-600">
+        <Link to="/">EduNexum</Link>
+      </div>
+      <div className="flex items-center space-x-6">
+        <Link to="/find-tutor" className="text-gray-700 hover:text-blue-600">Find tutor</Link>
+        <Link to="/become-tutor" className="text-gray-700 hover:text-blue-600">Become a tutor</Link>
+        <Link to="/About" className="text-gray-700 hover:text-blue-600">About</Link>
+        <Link to="/contact" className="text-gray-700 hover:text-blue-600">Contact us</Link>
+        <Link to="/login" className="text-gray-700 hover:text-blue-600">Login</Link>
+        <Link to="/signup" className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">Sign up</Link>
+      </div>
+    </nav>
   );
 };
 

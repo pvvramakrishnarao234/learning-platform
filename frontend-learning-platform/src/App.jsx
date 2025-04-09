@@ -16,7 +16,7 @@ import WebinarsViewAll from './pages/WebinarsViewAll';
 import JobsViewAll from './pages/JobsViewAll';
 import Homepage from './pages-a/Homepage';
 import About from './pages-a/About';
-// import Contact from './pages-a/Contact';
+import Contact from './pages-a/Contact';
 const App = () => {
   const { user } = useAuth();
 
@@ -25,7 +25,7 @@ const App = () => {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Homepage />} />
         <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/signup/student" element={<SignUpStudent />} />
         <Route path="/signup/teacher" element={<SignUpTeacher />} />
         <Route path="/signin" element={<SignIn />} />
