@@ -15,6 +15,7 @@ import Homepage from './pages-a/Homepage';
 import About from './pages-a/About';
 import Contact from './pages-a/Contact';
 import FindTutor from './pages-a/FindTutor';
+import BecomeTutor from './pages-a/BecomeTutor';
 const App = () => {
   const { user } = useAuth();
 
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/find-tutor" element={<FindTutor />} />
+        <Route path="/become-tutor" element={<BecomeTutor/>}/>
         <Route path="/signup/student" element={<SignUpStudent />} />
         <Route path="/signup/teacher" element={<SignUpTeacher />} />
         <Route path="/signin" element={<SignIn />} />
