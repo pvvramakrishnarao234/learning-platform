@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const SignUpStudent = () => {
@@ -15,7 +15,7 @@ const SignUpStudent = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     // Clear errors when typing
     if (name === 'password') {
       setPasswordError('');
@@ -89,7 +89,7 @@ const SignUpStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validatePassword() || !validateRetypePassword()) {
       return;
     }
@@ -126,60 +126,96 @@ const SignUpStudent = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">Student Sign Up</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        
-        <div>
-          <input 
-            type="password" 
-            name="password" 
-            placeholder="Password" 
-            value={formData.password} 
-            onChange={handleChange} 
-            onPaste={handlePaste}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            required 
-          />
-          <div className="mt-1 h-1 w-full bg-gray-200 rounded-full">
-            <div 
-              className={`h-1 rounded-full ${getStrengthColor()}`} 
-              style={{ width: `${passwordStrength}%` }}
-            ></div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 py-20">
+      <div className="max-w-6xl w-full p-12 bg-white rounded-lg shadow-lg border border-gray-200">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-12">Student Sign Up</h2>
+        <form onSubmit={handleSubmit} className="space-y-10">
+          {/* Two-column layout for all fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <input
+                type="text"
+                name="firstName"
+                placeholder="First Name"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                name="lastName"
+                placeholder="Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                onPaste={handlePaste}
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <div className="mt-2 h-2 w-full bg-gray-200 rounded-full">
+                <div
+                  className={`h-2 rounded-full ${getStrengthColor()}`}
+                  style={{ width: `${passwordStrength}%` }}
+                ></div>
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                Password must contain: 12+ characters, uppercase, lowercase, number, and special character
+              </p>
+              {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
+            </div>
+            <div>
+              <input
+                type="password"
+                name="retypePassword"
+                placeholder="Retype Password"
+                value={formData.retypePassword}
+                onChange={handleChange}
+                onPaste={handlePaste}
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              {retypeError && <p className="text-red-500 text-sm mt-2">{retypeError}</p>}
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            Password must contain: 12+ characters, uppercase, lowercase, number, and special character
-          </p>
-          {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
-        </div>
-        
-        <div>
-          <input 
-            type="password" 
-            name="retypePassword" 
-            placeholder="Retype Password" 
-            value={formData.retypePassword} 
-            onChange={handleChange} 
-            onPaste={handlePaste}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            required 
-          />
-          {retypeError && <p className="text-red-500 text-sm mt-1">{retypeError}</p>}
-        </div>
-        
-        <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition duration-300">
-          Sign Up
-        </button>
-      </form>
-      <p className="mt-4 text-center">
-        Are you a teacher?{' '}
-        <a href="/signup/teacher" className="text-blue-600 hover:underline">
-          Sign up as Teacher
-        </a>
-      </p>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-4 rounded-md hover:bg-blue-700 transition duration-300"
+          >
+            Sign Up
+          </button>
+        </form>
+        <p className="mt-10 text-center">
+          Are you a teacher?{' '}
+          <Link to="/signup-teacher" className="text-blue-600 hover:underline">
+            Sign up as Teacher
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

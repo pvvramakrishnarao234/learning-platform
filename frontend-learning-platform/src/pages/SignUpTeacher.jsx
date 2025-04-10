@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const countryCodes = [
@@ -14,7 +14,7 @@ const countryCodes = [
 const SignUpTeacher = () => {
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', password: '', retypePassword: '',
-    bio: '', services: [{ name: '',  pricePerHour: '' }],
+    bio: '', services: [{ name: '', pricePerHour: '' }],
     location: '', timings: '', languagesSpoken: '', tags: '', 
     contactNumber: '', countryCode: '+91', role: 'teacher',
     socialMedia: { linkedIn: '', twitter: '' }
@@ -184,211 +184,212 @@ const SignUpTeacher = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">Teacher Sign Up</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Personal Info */}
-        <div className="grid grid-cols-2 gap-4">
-          <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} className="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-          <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} className="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 py-20">
+      <div className="max-w-6xl w-full p-12 bg-white rounded-lg shadow-lg border border-gray-200">
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-12">Teacher Sign Up</h2>
         
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-        
-        {/* Password Fields */}
-        <div>
-          <input 
-            type="password" 
-            name="password" 
-            placeholder="Password" 
-            value={formData.password} 
-            onChange={handleChange} 
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            required 
-          />
-          <div className="mt-1 h-1 w-full bg-gray-200 rounded-full">
-            <div 
-              className={`h-1 rounded-full ${getStrengthColor()}`} 
-              style={{ width: `${passwordStrength}%` }}
+        <form onSubmit={handleSubmit} className="space-y-10">
+          {/* Personal Info - Two-column layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} className="p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} className="p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            <div className="md:col-span-2">
+              <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            </div>
+          </div>
+
+          {/* Password Fields - Two-column layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <input 
+                type="password" 
+                name="password" 
+                placeholder="Password" 
+                value={formData.password} 
+                onChange={handleChange} 
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                required 
+              />
+              <div className="mt-2 h-2 w-full bg-gray-200 rounded-full">
+                <div 
+                  className={`h-2 rounded-full ${getStrengthColor()}`} 
+                  style={{ width: `${passwordStrength}%` }}
+                />
+              </div>
+              {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
+            </div>
+            <div>
+              <input 
+                type="password" 
+                name="retypePassword" 
+                placeholder="Retype Password" 
+                value={formData.retypePassword} 
+                onChange={handleChange} 
+                className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                required 
+              />
+              {retypeError && <p className="text-red-500 text-sm mt-2">{retypeError}</p>}
+            </div>
+          </div>
+
+          {/* Bio */}
+          <div className="md:col-span-2">
+            <textarea 
+              name="bio" 
+              placeholder="Bio (Tell us about yourself)" 
+              value={formData.bio} 
+              onChange={handleChange} 
+              className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+              rows={4}
             />
           </div>
-          {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
-        </div>
-        
-        <input 
-          type="password" 
-          name="retypePassword" 
-          placeholder="Retype Password" 
-          value={formData.retypePassword} 
-          onChange={handleChange} 
-          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-          required 
-        />
-        {retypeError && <p className="text-red-500 text-sm mt-1">{retypeError}</p>}
 
-        {/* Bio */}
-        <textarea 
-          name="bio" 
-          placeholder="Bio (Tell us about yourself)" 
-          value={formData.bio} 
-          onChange={handleChange} 
-          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-          rows={4}
-        />
-
-        {/* Services Section */}
-        <div className="space-y-6 border p-6 rounded-lg shadow-sm bg-white">
-          <h2 className="text-xl font-semibold mb-4">Services</h2>
-
-          {formData.services.map((service, index) => (
-            <div key={index} className="space-y-4 border p-5 rounded-md bg-gray-50 relative">
-              <input
-                type="text"
-                placeholder="Service Name"
-                value={service.name}
-                onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Service Description"
-                value={service.description}
-                onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="number"
-                placeholder="Price per Hour"
-                value={service.pricePerHour}
-                onChange={(e) => handleServiceChange(index, 'pricePerHour', e.target.value)}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-
-              {/* Delete Button - centered at bottom */}
-              {formData.services.length > 1 && (
-                <div className="flex justify-center pt-2">
-                  <button
-                    type="button"
-                    onClick={() => removeService(index)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200"
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Add Service Button - styled properly */}
-          {formData.services.length < 3 && (
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={addService}
-                className="bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition duration-200"
-              >
-                + Add Service
-              </button>
-            </div>
-          )}
-        </div>
-
-        
-        {/* Other Fields */}
-        <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <input type="text" name="timings" placeholder="Timings (e.g., 9 AM - 5 PM)" value={formData.timings} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <input type="text" name="languagesSpoken" placeholder="Languages Spoken (comma-separated)" value={formData.languagesSpoken} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <input type="text" name="tags" placeholder="Tags (comma-separated)" value={formData.tags} onChange={handleChange} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-
-        {/* Phone Number */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Phone Number</label>
-          <div className="flex gap-2">
-            <div className="relative w-1/4">
-              <button
-                type="button"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full p-3 border rounded-md flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <span>{formData.countryCode}</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {isDropdownOpen && (
-                <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto">
-                  <div className="px-2 py-1 sticky top-0 bg-white">
-                    <input
-                      type="text"
-                      placeholder="Search countries..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full p-2 border-b focus:outline-none"
-                      autoFocus
-                    />
-                  </div>
-                  
-                  {filteredCountries.map((country) => (
+          {/* Services Section */}
+          <div className="md:col-span-2 space-y-6 border p-8 rounded-lg shadow-sm bg-white">
+            <h2 className="text-xl font-semibold mb-6">Services</h2>
+            {formData.services.map((service, index) => (
+              <div key={index} className="space-y-4 border p-6 rounded-md bg-gray-50 relative">
+                <input
+                  type="text"
+                  placeholder="Service Name"
+                  value={service.name}
+                  onChange={(e) => handleServiceChange(index, 'name', e.target.value)}
+                  className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Service Description"
+                  value={service.description}
+                  onChange={(e) => handleServiceChange(index, 'description', e.target.value)}
+                  className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="number"
+                  placeholder="Price per Hour"
+                  value={service.pricePerHour}
+                  onChange={(e) => handleServiceChange(index, 'pricePerHour', e.target.value)}
+                  className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                {formData.services.length > 1 && (
+                  <div className="flex justify-center pt-4">
                     <button
-                      key={country.code}
                       type="button"
-                      onClick={() => selectCountry(country.code)}
-                      className={`w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center ${formData.countryCode === country.code ? 'bg-blue-100' : ''}`}
+                      onClick={() => removeService(index)}
+                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200"
                     >
-                      <span className="mr-2">{country.flag}</span>
-                      <span className="font-medium">{country.code}</span>
+                      Delete
                     </button>
-                  ))}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
+            ))}
+            {formData.services.length < 3 && (
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={addService}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200"
+                >
+                  + Add Service
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Other Fields - Two-column layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleChange} className="p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="text" name="timings" placeholder="Timings (e.g., 9 AM - 5 PM)" value={formData.timings} onChange={handleChange} className="p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="text" name="languagesSpoken" placeholder="Languages Spoken (comma-separated)" value={formData.languagesSpoken} onChange={handleChange} className="p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="text" name="tags" placeholder="Tags (comma-separated)" value={formData.tags} onChange={handleChange} className="p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          {/* Phone Number */}
+          <div className="md:col-span-2 space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+            <div className="flex gap-4">
+              <div className="relative w-1/4">
+                <button
+                  type="button"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-full p-4 border rounded-md flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <span>{formData.countryCode}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-60 overflow-auto">
+                    <div className="px-2 py-1 sticky top-0 bg-white">
+                      <input
+                        type="text"
+                        placeholder="Search countries..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-2 border-b focus:outline-none"
+                        autoFocus
+                      />
+                    </div>
+                    {filteredCountries.map((country) => (
+                      <button
+                        key={country.code}
+                        type="button"
+                        onClick={() => selectCountry(country.code)}
+                        className={`w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center ${formData.countryCode === country.code ? 'bg-blue-100' : ''}`}
+                      >
+                        <span className="mr-2">{country.flag}</span>
+                        <span className="font-medium">{country.code}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <input
+                type="tel"
+                name="contactNumber"
+                placeholder="Phone number" 
+                value={formData.contactNumber}
+                onChange={handlePhoneChange}
+                className="flex-1 p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
             </div>
-            
+          </div>
+
+          {/* Social Media */}
+          <div className="md:col-span-2 space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Social Media</label>
             <input
-              type="tel"
-              name="contactNumber"
-              placeholder="Phone number" 
-              value={formData.contactNumber}
-              onChange={handlePhoneChange}
-              className="flex-1 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              type="url"
+              placeholder="LinkedIn Profile URL"
+              value={formData.socialMedia.linkedIn}
+              onChange={(e) => handleSocialMediaChange('linkedIn', e.target.value)}
+              className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="url"
+              placeholder="Twitter Profile URL"
+              value={formData.socialMedia.twitter}
+              onChange={(e) => handleSocialMediaChange('twitter', e.target.value)}
+              className="w-full p-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-        </div>
 
-        {/* Social Media */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Social Media</label>
-          <input
-            type="url"
-            placeholder="LinkedIn Profile URL"
-            value={formData.socialMedia.linkedIn}
-            onChange={(e) => handleSocialMediaChange('linkedIn', e.target.value)}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="url"
-            placeholder="Twitter Profile URL"
-            value={formData.socialMedia.twitter}
-            onChange={(e) => handleSocialMediaChange('twitter', e.target.value)}
-            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition duration-300">
-          Sign Up
-        </button>
-      </form>
-      
-      <p className="mt-4 text-center">
-        Are you a student?{' '}
-        <a href="/signup/student" className="text-blue-600 hover:underline">
-          Sign up as Student
-        </a>
-      </p>
+          <button type="submit" className="w-full bg-blue-600 text-white p-4 rounded-md hover:bg-blue-700 transition duration-300">
+            Sign Up
+          </button>
+        </form>
+        
+        <p className="mt-10 text-center">
+          Are you a student?{' '}
+          <Link to="/signup-student" className="text-blue-600 hover:underline">
+            Sign up as Student
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
