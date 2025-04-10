@@ -20,7 +20,7 @@ const ContactSection = () => {
           </div>
           <div className="md:w-1/2">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <img src="" alt="Contact" className="w-full h-auto rounded-lg" />
+              <img src="../../src/assets/About/Get into touch.png" alt="Contact" className="w-full h-auto rounded-lg" />
             </div>
           </div>
         </div>

@@ -29,22 +29,22 @@ const TeamSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="flex justify-center">
                   <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center relative z-10">
-                    <img src="" alt="Team member 1" className="w-full h-full object-cover" />
+                    <img src="frontend-learning-platform/src/assets/About/Rectangle 593.png" alt="Team member 1" className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center relative z-10">
-                    <img src="" alt="Team member 2" className="w-full h-full object-cover" />
+                    <img src="frontend-learning-platform/src/assets/About/Rectangle 594.png" alt="Team member 2" className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center relative z-10">
-                    <img src="" alt="Team member 3" className="w-full h-full object-cover" />
+                    <img src="frontend-learning-platform/src/assets/About/Rectangle 595.png" alt="Team member 3" className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="flex justify-center">
                   <div className="w-24 h-24 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center relative z-10">
-                    <img src="" alt="Team member 4" className="w-full h-full object-cover" />
+                    <img src="frontend-learning-platform/src/assets/About/Rectangle 596.png" alt="Team member 4" className="w-full h-full object-cover" />
                   </div>
                 </div>
               </div>

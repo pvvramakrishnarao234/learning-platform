@@ -1,9 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import MainLayout from './components/MainLayout';
-import Home from './pages/Home';
-import AboutUs from './pages/AboutUs';
-import ContactUs from './pages/ContactUs';
 import SignUpStudent from './pages/SignUpStudent';
 import SignUpTeacher from './pages/SignUpTeacher';
 import SignIn from './pages/SignIn';
@@ -17,6 +14,7 @@ import JobsViewAll from './pages/JobsViewAll';
 import Homepage from './pages-a/Homepage';
 import About from './pages-a/About';
 import Contact from './pages-a/Contact';
+import FindTutor from './pages-a/FindTutor';
 const App = () => {
   const { user } = useAuth();
 
@@ -26,6 +24,7 @@ const App = () => {
         <Route index element={<Homepage />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/find-tutor" element={<FindTutor />} />
         <Route path="/signup/student" element={<SignUpStudent />} />
         <Route path="/signup/teacher" element={<SignUpTeacher />} />
         <Route path="/signin" element={<SignIn />} />

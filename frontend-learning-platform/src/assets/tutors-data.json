@@ -1,31 +1,31 @@
-// data/tutors.json
+
 {
   "tutors": [
     {
       "id": 1,
-      "name": "Gajji Kirtisree",
+      "name": "Kavya Iyer",
       "location": "Bangalore, India",
       "rating": 4.8,
       "reviews": 56,
-      "subjects": ["English Science"],
+      "subjects": ["English ,Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 799,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 12586,
-      "photo": ""
+      "photo": "tutor1.jpg"
     },
     {
       "id": 2,
-      "name": "Gajji Kirtisree",
+      "name": "Aditi Sharma",
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 78,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 799,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 8470,
-      "photo": ""
+      "photo": "tutor2.jpg"
     },
     {
       "id": 3,
@@ -33,129 +33,129 @@
       "location": "Bangalore, India",
       "rating": 4.7,
       "reviews": 65,
-      "subjects": ["English Science"],
+      "subjects": ["English ,Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 799,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 10243,
-      "photo": ""
+      "photo": "tutor3.jpg"
     },
     {
       "id": 4,
-      "name": "Gajji Kirtisree",
+      "name": "Arjun Patel",
       "location": "Bangalore, India",
       "rating": 4.8,
       "reviews": 49,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 999,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 7856,
-      "photo": ""
+      "photo": "tutor4.jpg"
     },
     {
       "id": 5,
-      "name": "Gajji Kirtisree",
+      "name": "Nikhil Verma",
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 83,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 699,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 15678,
-      "photo": ""
+      "photo": "tutor5.jpg"
     },
     {
       "id": 6,
-      "name": "Gajji Kirtisree",
+      "name": "Priya Kapoor",
       "location": "Bangalore, India",
       "rating": 4.6,
       "reviews": 42,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 899,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 6543,
-      "photo": ""
+      "photo": "tutor6.jpg"
     },
     {
       "id": 7,
-      "name": "Gajji Kirtisree",
+      "name": "Ishita Roy",
       "location": "Bangalore, India",
       "rating": 4.7,
       "reviews": 58,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 799,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 9876,
-      "photo": ""
+      "photo": "tutor7.jpg"
     },
     {
       "id": 8,
-      "name": "Gajji Kirtisree",
+      "name": "Akash Gupta",
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 91,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 999,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 16789,
-      "photo": ""
+      "photo": "tutor8.jpg"
     },
     {
       "id": 9,
-      "name": "Gajji Kirtisree",
+      "name": "Siddharth Rao",
       "location": "Bangalore, India",
       "rating": 4.8,
       "reviews": 63,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 749,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 8975,
-      "photo": ""
+      "photo": "tutor9.jpg"
     },
     {
       "id": 10,
-      "name": "Gajji Kirtisree",
+      "name": "Varun Malhotra",
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 72,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 849,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 11345,
-      "photo": ""
+      "photo": "tutor10.jpg"
     },
     {
       "id": 11,
-      "name": "Gajji Kirtisree",
+      "name": "Neha Bansal",
       "location": "Bangalore, India",
       "rating": 4.7,
       "reviews": 54,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 699,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 7654,
-      "photo": ""
+      "photo": "tutor1.jpg"
     },
     {
       "id": 12,
-      "name": "Gajji Kirtisree",
+      "name": "Aditya Kulkarni",
       "location": "Bangalore, India",
       "rating": 4.8,
       "reviews": 68,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 799,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 10987,
-      "photo": ""
+      "photo": "tutor2.jpg"
     },
     {
       "id": 13,
@@ -163,12 +163,12 @@
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 76,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 899,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 13478,
-      "photo": ""
+      "photo": "tutor3.jpg"
     },
     {
       "id": 14,
@@ -176,12 +176,12 @@
       "location": "Bangalore, India",
       "rating": 4.7,
       "reviews": 59,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 749,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 8765,
-      "photo": ""
+      "photo": "tutor4.jpg"
     },
     {
       "id": 15,
@@ -189,12 +189,12 @@
       "location": "Bangalore, India",
       "rating": 4.8,
       "reviews": 81,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 849,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 12456,
-      "photo": ""
+      "photo": "tutor5.jpg"
     },
     {
       "id": 16,
@@ -202,12 +202,12 @@
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 87,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 899,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 14567,
-      "photo": ""
+      "photo": "tutor6.jpg"
     },
     {
       "id": 17,
@@ -215,12 +215,12 @@
       "location": "Bangalore, India",
       "rating": 4.7,
       "reviews": 52,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 699,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 7890,
-      "photo": ""
+      "photo": "tutor7.jpg"
     },
     {
       "id": 18,
@@ -228,12 +228,12 @@
       "location": "Bangalore, India",
       "rating": 4.8,
       "reviews": 64,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 799,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 9876,
-      "photo": ""
+      "photo": "tutor8.jpg"
     },
     {
       "id": 19,
@@ -241,12 +241,12 @@
       "location": "Bangalore, India",
       "rating": 4.9,
       "reviews": 79,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 899,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 13654,
-      "photo": ""
+      "photo": "tutor9.jpg"
     },
     {
       "id": 20,
@@ -254,12 +254,12 @@
       "location": "Bangalore, India",
       "rating": 4.7,
       "reviews": 61,
-      "subjects": ["English Science"],
+      "subjects": ["English, Science"],
       "bio": "Highly professional teaching experience that gives you a deep understanding of how to excel in today's competitive world.",
       "price": 749,
       "experience": "5+ Years of Teaching",
       "hoursCompleted": 8765,
-      "photo": ""
+      "photo": "tutor10.jpg"
     }
   ]
 }
