@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/firebaseConfig';
+// import bcryptjs from 'bcryptjs'
 import { useAuth } from '../contexts/AuthContext';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({ email: '', password: '', role: 'student', rememberMe: false });
   const [error, setError] = useState(''); // New state for error handling
-  const { login } = useAuth();
+  const { user, login, loginByToken } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -14,35 +17,68 @@ const SignIn = () => {
     if (error) setError(''); // Clear error when user starts typing
   };
 
+  useEffect(()=>{
+    if(user){
+        navigate('/');
+    }
+  },[user])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Clear previous errors
 
     try {
-      const res = await fetch(formData.role === 'admin' ? '/api/auth/admin/signin' : '/api/auth/signin', {
+      // const res = await fetch(formData.role === 'admin' ? '/api/auth/admin/signin' : '/api/auth/signin', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   credentials: 'include',
+      //   body: JSON.stringify({
+      //     email: formData.email.trim(),
+      //     password: formData.password.trim(),
+      //     role: formData.role
+      //   }),
+      // });
+      // const hashedPass = bcryptjs.hash(formData.password,12);
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+      const token = await user.getIdToken(); // Get Firebase ID token
+
+      console.log('Firebase token:', token);
+
+      // Send token to backend
+      const response = await fetch('/api/auth/signin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
+              email: formData.email.trim(),
+              password: formData.password.trim(),
+              role: formData.role
+          })
       });
 
-      const data = await res.json();
+      const data = await response.json();
+      console.log("Response Data:", data)
+      // console.log(formData);
 
-      if (res.ok) {
+      if (response.ok) {
         // Ensure required fields are present in the response
         if (!data.user?.id || !data.user?.role || !data.token) {
           throw new Error('Invalid response from server');
         }
-        login({
-          id: data.user.id,
-          role: data.user.role,
-          name: data.user.firstName && data.user.lastName
-            ? `${data.user.firstName} ${data.user.lastName}`
-            : 'User', // Fallback if name fields are missing
-        }, data.token);
+        loginByToken({
+          user: {
+            id: data.user.id,
+            role: data.user.role,
+            name: data.user.firstName && data.user.lastName
+              ? `${data.user.firstName} ${data.user.lastName}`
+              : 'User',
+          },
+          token: data.token,
+        });
+
         navigate('/');
       } else {
         setError(data.message || 'Invalid credentials');

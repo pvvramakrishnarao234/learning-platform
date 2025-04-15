@@ -20,21 +20,21 @@ const StudentDashboard = () => {
       }
 
       try {
-        const headers = { 'Authorization': `Bearer ${token}` };
-        const [profileRes, jobsRes] = await Promise.all([
-          fetch('/api/profiles', { headers }),
-          fetch('/api/jobs', { headers }),
-        ]);
+        // const headers = { 'Authorization': `Bearer ${token}` };
+        // const [profileRes, jobsRes] = await Promise.all([
+        //   fetch('/api/profiles', { headers }),
+        //   fetch('/api/jobs', { headers }),
+        // ]);
 
-        if (!profileRes.ok) throw new Error(`Profile fetch failed: ${profileRes.statusText}`);
-        if (!jobsRes.ok) throw new Error(`Jobs fetch failed: ${jobsRes.statusText}`);
+        // if (!profileRes.ok) throw new Error(`Profile fetch failed: ${profileRes.statusText}`);
+        // if (!jobsRes.ok) throw new Error(`Jobs fetch failed: ${jobsRes.statusText}`);
 
-        const profileData = await profileRes.json();
-        const jobsData = await jobsRes.json();
+        // const profileData = await profileRes.json();
+        // const jobsData = await jobsRes.json();
 
-        setProfile(profileData);
-        setJobPosts(jobsData);
-        setWebinarsApplied(profileData.webinarsApplied || []);
+        // setProfile(profileData);
+        // setJobPosts(jobsData);
+        // setWebinarsApplied(profileData.webinarsApplied || []);
       } catch (err) {
         setError(err.message);
       } finally {

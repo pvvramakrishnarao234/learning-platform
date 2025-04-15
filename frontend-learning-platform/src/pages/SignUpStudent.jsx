@@ -3,14 +3,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const SignUpStudent = () => {
+  const {user} = useAuth();
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', password: '', retypePassword: '', role: 'student',
   });
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordError, setPasswordError] = useState('');
   const [retypeError, setRetypeError] = useState('');
-  const { login } = useAuth();
+  const { login, loginByToken } = useAuth();
   const navigate = useNavigate();
+  useEffect(()=>{
+    if(user){
+        navigate('/');
+    }
+  },[user])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -102,12 +108,18 @@ const SignUpStudent = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      // console.log(data);
       if (res.ok) {
-        login({
-          id: data.user.id,
-          role: data.user.role,
-          name: `${data.user.firstName} ${data.user.lastName}`
-        }, data.token);
+        loginByToken({
+          user: {
+            id: data.user.id,
+            role: data.user.role,
+            name: data.user.firstName && data.user.lastName
+              ? `${data.user.firstName} ${data.user.lastName}`
+              : 'User',
+          },
+          token: data.token,
+        });
         navigate('/');
       } else {
         alert(data.message);

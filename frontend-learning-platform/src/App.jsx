@@ -16,9 +16,9 @@ import About from './pages-a/About';
 import Contact from './pages-a/Contact';
 import FindTutor from './pages-a/FindTutor';
 import BecomeTutor from './pages-a/BecomeTutor';
+import { useEffect } from 'react';
 const App = () => {
   const { user } = useAuth();
-
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>

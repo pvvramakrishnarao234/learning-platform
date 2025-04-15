@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (email, password, role) => {
     try {
       setLoading(true);
       const response = await fetch('/api/auth/signin', {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, role })
       });
 
       if (!response.ok) {
@@ -51,10 +51,29 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await response.json();
+      // console.log(data);
       setUser(data.user);
       setToken(data.token);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      setError(null);
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginByToken = async ({user, token}) => {
+    try {
+      // console.log(user, token);
+      setLoading(true);
+      setUser(user);
+      setToken(token);
+      // console.log("AuthContext: ",user, token);
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       setError(null);
     } catch (error) {
       console.error('Login error:', error);
@@ -78,12 +97,31 @@ export const AuthProvider = ({ children }) => {
       const savedToken = localStorage.getItem('token');
       const savedUser = localStorage.getItem('user');
 
+      // if (savedToken && savedUser) {
+      //   setToken(savedToken);
+      //   setUser(JSON.parse(savedUser));
+      //   // console.log(user, token);
+      //   // console.log(savedToken, savedUser);
+
+      //   await checkAuth(savedToken);
+      // } else {
+      //   setLoading(false);
+      // }
+
       if (savedToken && savedUser) {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
-        await checkAuth(savedToken);
-      } else {
-        setLoading(false);
+        try {
+          const parsedUser = JSON.parse(savedUser);
+  
+          setToken(savedToken);
+          setUser(parsedUser);
+          setError(null);
+        } catch (err) {
+          console.error('Failed to parse user from localStorage:', err);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+          setToken(null);
+        }
       }
     };
     initializeAuth();
@@ -94,6 +132,7 @@ export const AuthProvider = ({ children }) => {
       user, 
       token, 
       login, 
+      loginByToken,
       logout, 
       loading,
       error,
